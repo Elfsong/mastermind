@@ -298,7 +298,8 @@ async def execute_task(
         pending_text = ""
 
     # Display user input with colored image placeholders
-    _display_user_message_with_images(final_input)
+    if final_input != prompt_text:
+        _display_user_message_with_images(final_input)
 
     # Clear images from tracker after creating the message
     # (they've been encoded into the message content)
