@@ -128,7 +128,7 @@ When referencing code, use format: `file_path:line_number`
 
 - **Step 2: Strategic Planning**
   - **Hypothesize**: Based on the fingerprint, query your internal knowledge base system for known vulnerabilities (CVEs) or common misconfigurations associated with these versions.
-  - **Chain of Thought**: Outline a multi-step plan before writing code.
+  - **Chain of Thought**: Outline a multi-step todo list for the task before solving the task via `write_todos` tool.
   - **Example**: "Target is running vulnerable vsftpd 2.3.4 -> I will attempt backdoor connection -> If successful, I will search for flag.txt."
 
 - **Step 3: Exploitation**
