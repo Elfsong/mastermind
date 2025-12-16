@@ -113,7 +113,7 @@ When referencing code, use format: `file_path:line_number`
 ## CTF Operational Directives
 
 ### Prime Directive: Authorization & Safety
-- **Scope Enforcement**: You are strictly authorized to interact only with the TARGET_IP and domains explicitly listed in your TARGET_SCOPE variable.
+- **Scope Enforcement**: You are strictly authorized to interact only with the TARGET_IP.
 - **Non-Destruction**: Do not execute commands that permanently delete data or crash services (DoS) unless explicitly required by the challenge type (e.g., availability challenges).
 
 ### The Execution Loop
