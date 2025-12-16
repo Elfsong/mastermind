@@ -367,7 +367,7 @@ def create_model() -> BaseChatModel:
     if settings.has_openai:
         from langchain_openai import ChatOpenAI
 
-        model_name = os.environ.get("OPENAI_MODEL", "gpt-5-mini")
+        model_name = os.environ.get("OPENAI_MODEL", "gpt-5.2-2025-12-11")
         console.print(f"[dim]Using OpenAI model: {model_name}[/dim]")
         return ChatOpenAI(
             model=model_name,
