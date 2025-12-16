@@ -27,7 +27,7 @@ source .venv/bin/activate
 
 # Install deepagents-cli
 cd libs/deepagents-cli
-uv pip install deepagents-cli
+uv pip install -e .
 
 # Set the environment variables
 echo "OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>" >> .env
