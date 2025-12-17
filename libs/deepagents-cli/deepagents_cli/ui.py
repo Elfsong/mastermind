@@ -97,7 +97,7 @@ def format_tool_display(tool_name: str, tool_args: dict) -> str:
         # Shell: show the command being executed
         if "command" in tool_args:
             command = str(tool_args["command"])
-            command = truncate_value(command, 180)
+            command = truncate_value(command, 360)
             return f'{tool_name}("{command}")'
 
     elif tool_name == "ls":
@@ -148,7 +148,7 @@ def format_tool_display(tool_name: str, tool_args: dict) -> str:
 
     # Fallback: generic formatting for unknown tools
     # Show all arguments in key=value format
-    args_str = ", ".join(f"{k}={truncate_value(str(v), 50)}" for k, v in tool_args.items())
+    args_str = ", ".join(f"{k}={truncate_value(str(v), 180)}" for k, v in tool_args.items())
     return f"{tool_name}({args_str})"
 
 
