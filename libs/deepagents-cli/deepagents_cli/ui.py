@@ -137,7 +137,7 @@ def format_tool_display(tool_name: str, tool_args: dict) -> str:
         # Task: show the task description
         if "description" in tool_args:
             desc = str(tool_args["description"])
-            desc = truncate_value(desc, 100)
+            desc = truncate_value(desc, 1200)
             return f'{tool_name}("{desc}")'
 
     elif tool_name == "write_todos":
@@ -148,7 +148,7 @@ def format_tool_display(tool_name: str, tool_args: dict) -> str:
 
     # Fallback: generic formatting for unknown tools
     # Show all arguments in key=value format
-    args_str = ", ".join(f"{k}={truncate_value(str(v), 180)}" for k, v in tool_args.items())
+    args_str = ", ".join(f"{k}={truncate_value(str(v), 360)}" for k, v in tool_args.items())
     return f"{tool_name}({args_str})"
 
 
