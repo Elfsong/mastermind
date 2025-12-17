@@ -205,6 +205,69 @@ def prompt_for_tool_approval(
     return {"type": "auto_approve_all"}
 
 
+class TaskOutputManager:
+    """Manages output state and rendering for task execution."""
+
+    def __init__(self):
+        self.pending_text = ""
+        self.spinner_active = False
+        self.has_responded = False
+        self.status = console.status(f"[bold {COLORS['thinking']}]Agent is thinking...", spinner="dots")
+        self.is_reasoning = False
+
+    def stream_reasoning(self, text: str) -> None:
+        """Stream reasoning text to console."""
+        if not self.is_reasoning:
+            self.stop_spinner()
+            console.print(f"[{COLORS['thinking']}]Thinking: ", end="")
+            self.is_reasoning = True
+        
+        console.print(f"[{COLORS['thinking']}]{text}[/]", end="")
+        sys.stdout.flush()
+
+    def end_reasoning(self) -> None:
+        """End reasoning stream if active."""
+        if self.is_reasoning:
+            console.print()
+            self.is_reasoning = False
+
+    def start_spinner(self, message: str = None) -> None:
+        """Start or update the spinner."""
+        self.end_reasoning()
+        if message:
+            self.status.update(message)
+        if not self.spinner_active:
+            self.status.start()
+            self.spinner_active = True
+
+    def stop_spinner(self) -> None:
+        """Stop the spinner if active."""
+        if self.spinner_active:
+            self.status.stop()
+            self.spinner_active = False
+
+    def append_text(self, text: str) -> None:
+        """Accumulate assistant text."""
+        self.end_reasoning()
+        self.pending_text += text
+
+    def flush_text_buffer(self, *, final: bool = False) -> None:
+        """Flush accumulated assistant text as rendered markdown when appropriate."""
+        self.end_reasoning()
+        if not final or not self.pending_text.strip():
+            return
+        
+        self.stop_spinner()
+        
+        if not self.has_responded:
+            console.print("🔮", style=COLORS["agent"], markup=False, end=" ")
+            self.has_responded = True
+            
+        markdown = Markdown(self.pending_text.rstrip())
+        console.print(markdown, style=COLORS["agent"])
+        self.pending_text = ""
+
+
 async def execute_task(
     user_input: str,
     agent,
@@ -250,15 +313,13 @@ async def execute_task(
         "metadata": {"assistant_id": assistant_id} if assistant_id else {},
     }
 
-    has_responded = False
     captured_input_tokens = 0
     captured_output_tokens = 0
     current_todos = None  # Track current todo list state
     start_time = time.time()
 
-    status = console.status(f"[bold {COLORS['thinking']}]Agent is thinking...", spinner="dots")
-    status.start()
-    spinner_active = True
+    output_manager = TaskOutputManager()
+    output_manager.start_spinner()
 
     tool_icons = {
         "read_file": "📖",
@@ -281,24 +342,7 @@ async def execute_task(
     displayed_tool_ids = set()
     # Buffer partial tool-call chunks keyed by streaming index
     tool_call_buffers: dict[str | int, dict] = {}
-    # Buffer assistant text so we can render complete markdown segments
-    pending_text = ""
-
-    def flush_text_buffer(*, final: bool = False) -> None:
-        """Flush accumulated assistant text as rendered markdown when appropriate."""
-        nonlocal pending_text, spinner_active, has_responded
-        if not final or not pending_text.strip():
-            return
-        if spinner_active:
-            status.stop()
-            spinner_active = False
-        if not has_responded:
-            console.print("●", style=COLORS["agent"], markup=False, end=" ")
-            has_responded = True
-        markdown = Markdown(pending_text.rstrip())
-        console.print(markdown, style=COLORS["agent"])
-        pending_text = ""
-
+    
     # Display user input with colored image placeholders
     if final_input != prompt_text:
         _display_user_message_with_images(final_input)
@@ -366,9 +410,7 @@ async def execute_task(
                             if new_todos != current_todos:
                                 current_todos = new_todos
                                 # Stop spinner before rendering todos
-                                if spinner_active:
-                                    status.stop()
-                                    spinner_active = False
+                                output_manager.stop_spinner()
                                 console.print()
                                 render_todo_list(new_todos)
                                 console.print()
@@ -384,19 +426,17 @@ async def execute_task(
                     if isinstance(message, HumanMessage):
                         content = message.text
                         if content:
-                            flush_text_buffer(final=True)
-                            if spinner_active:
-                                status.stop()
-                                spinner_active = False
-                            if not has_responded:
-                                console.print("●", style=COLORS["agent"], markup=False, end=" ")
-                                has_responded = True
+                            output_manager.flush_text_buffer(final=True)
+                            output_manager.stop_spinner()
+                            if not output_manager.has_responded:
+                                console.print("🔮", style=COLORS["agent"], markup=False, end=" ")
+                                output_manager.has_responded = True
                             markdown = Markdown(content)
                             console.print(markdown, style=COLORS["agent"])
                             console.print()
                         continue
 
-                    if isinstance(message, ToolMessage):
+                    if isinstance(message, ToolMessage):                        
                         # Tool results are sent to the agent, not displayed to users
                         # Exception: show shell command errors to help with debugging
                         tool_name = getattr(message, "name", "")
@@ -405,40 +445,33 @@ async def execute_task(
                         record = file_op_tracker.complete_with_message(message)
 
                         # Reset spinner message after tool completes
-                        if spinner_active:
-                            status.update(f"[bold {COLORS['thinking']}]Agent is thinking...")
+                        if output_manager.spinner_active:
+                            output_manager.start_spinner(f"[bold {COLORS['thinking']}]Agent is thinking...")
 
                         if tool_name == "shell" and tool_status != "success":
-                            flush_text_buffer(final=True)
+                            output_manager.flush_text_buffer(final=True)
                             if tool_content:
-                                if spinner_active:
-                                    status.stop()
-                                    spinner_active = False
+                                output_manager.stop_spinner()
                                 console.print()
                                 console.print(tool_content, style="red", markup=False)
                                 console.print()
                         elif tool_content and isinstance(tool_content, str):
                             stripped = tool_content.lstrip()
                             if stripped.lower().startswith("error"):
-                                flush_text_buffer(final=True)
-                                if spinner_active:
-                                    status.stop()
-                                    spinner_active = False
+                                output_manager.flush_text_buffer(final=True)
+                                output_manager.stop_spinner()
                                 console.print()
                                 console.print(tool_content, style="red", markup=False)
                                 console.print()
 
                         if record:
-                            flush_text_buffer(final=True)
-                            if spinner_active:
-                                status.stop()
-                                spinner_active = False
+                            output_manager.flush_text_buffer(final=True)
+                            output_manager.stop_spinner()
                             console.print()
                             render_file_operation(record)
                             console.print()
-                            if not spinner_active:
-                                status.start()
-                                spinner_active = True
+                            if not output_manager.spinner_active:
+                                output_manager.start_spinner()
 
                         # For all other tools (web_search, http_request, etc.),
                         # results are hidden from user - agent will process and respond
@@ -467,17 +500,15 @@ async def execute_task(
                         if block_type == "text":
                             text = block.get("text", "")
                             if text:
-                                pending_text += text
+                                output_manager.append_text(text)
 
                         # Handle reasoning blocks
                         elif block_type == "reasoning":
-                            flush_text_buffer(final=True)
+                            if output_manager.pending_text:
+                                output_manager.flush_text_buffer(final=True)
                             reasoning = block.get("reasoning", "")
-                            if reasoning and spinner_active:
-                                status.stop()
-                                spinner_active = False
-                                # Could display reasoning differently if desired
-                                # For now, skip it or handle minimally
+                            if reasoning:
+                                output_manager.stream_reasoning(reasoning)
 
                         # Handle tool call chunks
                         # Some models (OpenAI, Anthropic) stream tool_call_chunks
@@ -540,7 +571,7 @@ async def execute_task(
                             if not isinstance(parsed_args, dict):
                                 parsed_args = {"value": parsed_args}
 
-                            flush_text_buffer(final=True)
+                            output_manager.flush_text_buffer(final=True)
                             if buffer_id is not None:
                                 if buffer_id not in displayed_tool_ids:
                                     displayed_tool_ids.add(buffer_id)
@@ -552,10 +583,9 @@ async def execute_task(
                             tool_call_buffers.pop(buffer_key, None)
                             icon = tool_icons.get(buffer_name, "🔧")
 
-                            if spinner_active:
-                                status.stop()
+                            output_manager.stop_spinner()
 
-                            if has_responded:
+                            if output_manager.has_responded:
                                 console.print()
 
                             display_str = format_tool_display(buffer_name, parsed_args)
@@ -567,15 +597,13 @@ async def execute_task(
 
                             # Restart spinner with context about which tool is executing
                             elapsed = time.time() - start_time
-                            status.update(f"[bold {COLORS['thinking']}]Executing {display_str}... ({elapsed:.1f}s)")
-                            status.start()
-                            spinner_active = True
+                            output_manager.start_spinner(f"[bold {COLORS['thinking']}]Executing {display_str}... ({elapsed:.1f}s)")
 
                     if getattr(message, "chunk_position", None) == "last":
-                        flush_text_buffer(final=True)
+                        output_manager.flush_text_buffer(final=True)
 
             # After streaming loop - handle interrupt if it occurred
-            flush_text_buffer(final=True)
+            output_manager.flush_text_buffer(final=True)
 
             # Handle human-in-the-loop after stream completes
             if interrupt_occurred:
@@ -588,9 +616,7 @@ async def execute_task(
                         decisions = []
                         for action_request in hitl_request["action_requests"]:
                             # Show what's being auto-approved (brief, dim message)
-                            if spinner_active:
-                                status.stop()
-                                spinner_active = False
+                            output_manager.stop_spinner()
 
                             description = action_request.get("description", "tool action")
                             console.print()
@@ -601,14 +627,11 @@ async def execute_task(
                         hitl_response[interrupt_id] = {"decisions": decisions}
 
                         # Restart spinner for continuation
-                        if not spinner_active:
-                            status.start()
-                            spinner_active = True
+                        if not output_manager.spinner_active:
+                            output_manager.start_spinner()
                     else:
                         # Normal HITL flow - stop spinner and prompt user
-                        if spinner_active:
-                            status.stop()
-                            spinner_active = False
+                        output_manager.stop_spinner()
 
                         # Handle human-in-the-loop approval
                         decisions = []
@@ -660,10 +683,7 @@ async def execute_task(
 
             if interrupt_occurred and hitl_response:
                 if suppress_resumed_output:
-                    if spinner_active:
-                        status.stop()
-                        spinner_active = False
-
+                    output_manager.stop_spinner()
                     console.print("[yellow]Command rejected.[/yellow]", style="bold")
                     console.print("Tell the agent what you'd like to do differently.")
                     console.print()
@@ -673,13 +693,11 @@ async def execute_task(
                 stream_input = Command(resume=hitl_response)
                 # Continue the while loop to restream
             else:
-                # No interrupt, break out of while loop
                 break
 
     except asyncio.CancelledError:
         # Event loop cancelled the task (e.g. Ctrl+C during streaming) - clean up and return
-        if spinner_active:
-            status.stop()
+        output_manager.stop_spinner()
         console.print("\n[yellow]Interrupted by user[/yellow]")
         console.print("Updating agent state...", style="dim")
 
@@ -700,8 +718,7 @@ async def execute_task(
 
     except KeyboardInterrupt:
         # User pressed Ctrl+C - clean up and exit gracefully
-        if spinner_active:
-            status.stop()
+        output_manager.stop_spinner()
         console.print("\n[yellow]Interrupted by user[/yellow]")
         console.print("Updating agent state...", style="dim")
 
@@ -721,10 +738,9 @@ async def execute_task(
 
         return
 
-    if spinner_active:
-        status.stop()
+    output_manager.stop_spinner()
 
-    if has_responded:
+    if output_manager.has_responded:
         console.print()
         # Track token usage (display only via /tokens command)
         if token_tracker and (captured_input_tokens or captured_output_tokens):

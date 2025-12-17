@@ -360,7 +360,18 @@ def _create_task_tool(
             allowed_types = ", ".join([f"`{k}`" for k in subagent_graphs])
             return f"We cannot invoke subagent {subagent_type} because it does not exist, the only allowed types are {allowed_types}"
         subagent, subagent_state = _validate_and_prepare_state(subagent_type, description, runtime)
-        result = await subagent.ainvoke(subagent_state)
+        
+        # Stream the subagent execution to show progress
+        print(f"\n[SubAgent: {subagent_type}] Starting task...", flush=True)
+        result = subagent_state
+        async for chunk in subagent.astream(subagent_state, stream_mode="values"):
+            result = chunk
+            if "messages" in chunk and chunk["messages"]:
+                last_msg = chunk["messages"][-1]
+                if hasattr(last_msg, "tool_calls") and last_msg.tool_calls:
+                    for tc in last_msg.tool_calls:
+                        print(f"[SubAgent: {subagent_type}] 🛠️  Tool Call: {tc['name']}", flush=True)
+
         if not runtime.tool_call_id:
             value_error_msg = "Tool call ID is required for subagent invocation"
             raise ValueError(value_error_msg)

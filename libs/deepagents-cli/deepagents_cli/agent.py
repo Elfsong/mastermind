@@ -454,12 +454,22 @@ def create_cli_agent(
         # Full HITL for destructive operations
         interrupt_on = _add_interrupt_on()
 
+    reconnaissance_subagent = {
+        "name": "reconnaissance-agent",
+        "description": "Used to reconnaissance the target",
+        "system_prompt": "You are an expert reconnaissance agent",
+        "tools": tools,
+        "model": "openai:gpt-5.2-2025-12-11",
+    }
+    subagents = [reconnaissance_subagent]
+
     # Create the agent
     agent = create_deep_agent(
         name=f"{assistant_id}-{uuid.uuid4()}",
         model=model,
         system_prompt=system_prompt,
         tools=tools,
+        subagents=subagents,
         backend=composite_backend,
         middleware=agent_middleware,
         interrupt_on=interrupt_on,

@@ -685,6 +685,7 @@ def _execute_tool_generator(
         runtime: ToolRuntime[None, FilesystemState],
     ) -> str:
         """Synchronous wrapper for execute tool."""
+        print(f"[Execute] Running command: {command}", flush=True)
         resolved_backend = _get_backend(backend, runtime)
 
         # Runtime check - fail gracefully if not supported
@@ -718,6 +719,7 @@ def _execute_tool_generator(
         runtime: ToolRuntime[None, FilesystemState],
     ) -> str:
         """Asynchronous wrapper for execute tool."""
+        print(f"[Execute] Running command: {command}", flush=True)
         resolved_backend = _get_backend(backend, runtime)
 
         # Runtime check - fail gracefully if not supported
