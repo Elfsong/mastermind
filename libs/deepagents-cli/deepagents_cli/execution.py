@@ -6,7 +6,8 @@ import re
 import sys
 import termios
 import tty
-
+import time
+import datetime
 from langchain.agents.middleware.human_in_the_loop import (
     ActionRequest,
     ApproveDecision,
@@ -253,6 +254,7 @@ async def execute_task(
     captured_input_tokens = 0
     captured_output_tokens = 0
     current_todos = None  # Track current todo list state
+    start_time = time.time()
 
     status = console.status(f"[bold {COLORS['thinking']}]Agent is thinking...", spinner="dots")
     status.start()
@@ -564,7 +566,8 @@ async def execute_task(
                             )
 
                             # Restart spinner with context about which tool is executing
-                            status.update(f"[bold {COLORS['thinking']}]Executing {display_str}...")
+                            elapsed = time.time() - start_time
+                            status.update(f"[bold {COLORS['thinking']}]Executing {display_str}... ({elapsed:.1f}s)")
                             status.start()
                             spinner_active = True
 
