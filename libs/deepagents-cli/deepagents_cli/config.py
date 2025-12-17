@@ -15,12 +15,12 @@ dotenv.load_dotenv()
 
 # Color scheme
 COLORS = {
-    "primary": "#10b981",
-    "dim": "#6b7280",
-    "user": "#ffffff",
-    "agent": "#10b981",
-    "thinking": "#34d399",
-    "tool": "#fbbf24",
+    "primary": "#10b981",   # Green
+    "dim": "#6b7280",       # Gray
+    "user": "#ffffff",      # White
+    "agent": "#10b981",     # Green
+    "thinking": "#34d399",  # Light Green
+    "tool": "#fbbf24",      # Yellow
 }
 
 # ASCII art banner

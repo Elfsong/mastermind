@@ -188,7 +188,7 @@ async def simple_cli(
         )
         console.print()
 
-    console.print("All set! Let's get started...", style=COLORS["agent"])
+    console.print("[ALL SET] The defender has to be lucky every time. The attacker only has to be lucky once.", style=COLORS["tool"])
 
     if sandbox_type:
         working_dir = get_default_working_dir(sandbox_type)
