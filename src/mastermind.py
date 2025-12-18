@@ -57,7 +57,8 @@ def shell_command(command: str, timeout: int = 30, cwd: str = None) -> Dict[str,
         return {"stdout": "", "stderr": str(e), "returncode": -1}
 
 def get_system_prompt(agent_name: str):
-    return Path(f"prompts/{agent_name}.md").read_text()
+    prompt_path = Path(__file__).parent / "prompts" / f"{agent_name}.md"
+    return prompt_path.read_text()
 
 
 backend = ChatOpenAI(model="gpt-4o-mini", streaming=True)
@@ -69,7 +70,7 @@ mastermind = create_agent(
     system_prompt=get_system_prompt("mastermind"), 
     tools=[web_search, shell_command],
     middleware=[SummarizationMiddleware(model=backend, trigger=("fraction", 0.85), keep=("messages", 6))],
-    checkpointer=InMemorySaver(),
+    # checkpointer=InMemorySaver(),
 )
 
 def run_interactive_agent():
