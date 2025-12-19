@@ -169,7 +169,7 @@ def run_interactive_agent(agent, config):
             console.print("\n[bold yellow]Task Cancelled[/bold yellow]")
             continue
 
-if __name__ == "__main__":
+def main():
     # args: --model gpt-4o-mini or --model gemini-3-pro-preview
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, default="google", choices=["openai", "google", "anthropic"])
@@ -194,3 +194,6 @@ if __name__ == "__main__":
 
     config = {"configurable": {"thread_id": str(uuid.uuid4())}}
     run_interactive_agent(mastermind, config)
+
+if __name__ == "__main__":
+    main()
