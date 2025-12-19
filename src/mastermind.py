@@ -176,7 +176,7 @@ def run_interactive_agent(agent, config):
                                             args = tool_call["args"]
                                             break
                                 
-                                console.print(Panel(
+                                live.console.print(Panel(
                                     f"[bold yellow]Tool:[/bold yellow] {last_node_msg.name}\n"
                                     f"[bold yellow]Args:[/bold yellow] {args}\n"
                                     f"[bold yellow]Result:[/bold yellow] [dim]{str(last_node_msg.content)[:300]}...[/dim]", 
