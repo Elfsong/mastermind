@@ -26,14 +26,10 @@ sudo killall openvpn
 cd /home
 git clone https://github.com/Elfsong/mastermind.git
 
-# Create virtual environment
+# Create virtual environment named mastermind
 cd mastermind
-uv venv
-source .venv/bin/activate
-
-# Install deepagents-cli
-cd libs/deepagents-cli
-uv pip install -e .
+uv venv .mastermind
+source .mastermind/bin/activate
 
 # Set the environment variables
 echo "OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>" >> .env
