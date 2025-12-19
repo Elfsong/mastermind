@@ -71,6 +71,7 @@ def get_system_prompt(agent_name: str):
     return prompt_path.read_text()
 
 def run_interactive_agent(agent, config):
+    console.clear()
     system_info = "[dim][+] Offensive Attack Mode Enabled[/dim]\n[dim][+] Unattended Mode Enabled[/dim]\n[bold yellow][+] Command+C to Exit[/bold yellow]"
     console.print(
         Panel(
