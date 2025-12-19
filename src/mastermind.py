@@ -192,7 +192,7 @@ def run_interactive_agent(agent, config):
 if __name__ == "__main__":
     # args: --model gpt-4o-mini or --model gemini-3-pro-preview
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, default="openai", choices=["openai", "google", "anthropic"])
+    parser.add_argument("--model", type=str, default="google", choices=["openai", "google", "anthropic"])
     args = parser.parse_args()
 
     if args.model == "openai":
