@@ -91,7 +91,10 @@ def run_interactive_agent(agent, config):
             readline.write_history_file(HISTORY_FILE)
             user_input = user_input.strip()
         except EOFError:
-            console.print("\n[yellow]Interrupted by user[/yellow]")
+            console.print("\n[bold red]EOF Error[/bold red]")
+            break
+        except KeyboardInterrupt:
+            console.print("\n[bold green]Goodbye![/bold green]")
             break
         
         # Exit commands
@@ -119,6 +122,9 @@ def run_interactive_agent(agent, config):
                     subprocess.run(cmd, shell=True)
                 except Exception as e:
                     console.print(f"[bold red]Execution Error:[/bold red] {e}")
+                except KeyboardInterrupt:
+                    console.print("\n[bold yellow]Shell Command Interrupted[/bold yellow]")
+                    continue
             
             # Skip this loop, don't send to AI
             continue
@@ -131,53 +137,57 @@ def run_interactive_agent(agent, config):
         initial_display = Spinner("dots", text="Thinking...", style="bold blue")
 
         # Live display
-        with Live(initial_display, vertical_overflow="visible", refresh_per_second=10) as live:
-            for mode, data in agent.stream(input_data, config, stream_mode=["messages", "updates"]):
-                
-                if mode == "messages":
-                    msg, _ = data
-                    if isinstance(msg, AIMessageChunk) and msg.content:
-                        chunk_content = msg.content
-                        if isinstance(chunk_content, list):
-                            for part in chunk_content:
-                                if isinstance(part, str):
-                                    full_msg_content += part
-                                elif isinstance(part, dict) and "text" in part:
-                                    full_msg_content += part["text"]
-                        elif isinstance(chunk_content, str):
-                            full_msg_content += chunk_content
+        try:
+            with Live(initial_display, vertical_overflow="visible", refresh_per_second=10) as live:
+                for mode, data in agent.stream(input_data, config, stream_mode=["messages", "updates"]):
+                    
+                    if mode == "messages":
+                        msg, _ = data
+                        if isinstance(msg, AIMessageChunk) and msg.content:
+                            chunk_content = msg.content
+                            if isinstance(chunk_content, list):
+                                for part in chunk_content:
+                                    if isinstance(part, str):
+                                        full_msg_content += part
+                                    elif isinstance(part, dict) and "text" in part:
+                                        full_msg_content += part["text"]
+                            elif isinstance(chunk_content, str):
+                                full_msg_content += chunk_content
 
-                        # Update Live display to Markdown
-                        live.update(Panel(Markdown(full_msg_content), title="[ai]Mastermind[/ai]", border_style="blue", expand=False))
+                            # Update Live display to Markdown
+                            live.update(Panel(Markdown(full_msg_content), title="[ai]Mastermind[/ai]", border_style="blue", expand=False))
 
-                elif mode == "updates":
-                    # Tool output processing logic remains the same
-                    # Note: Direct console.print here will print above the Live component, which is allowed by Rich
-                    for node_name, output in data.items():
-                        if not output or "messages" not in output: continue
-                        last_node_msg = output["messages"][-1]
-                        
-                        if isinstance(last_node_msg, AIMessage):
-                            last_ai_message = last_node_msg
-                        
-                        if isinstance(last_node_msg, ToolMessage):
-                            args = "N/A"
-                            if last_ai_message and hasattr(last_ai_message, "tool_calls"):
-                                for tool_call in last_ai_message.tool_calls:
-                                    if tool_call["id"] == last_node_msg.tool_call_id:
-                                        args = tool_call["args"]
-                                        break
+                    elif mode == "updates":
+                        # Tool output processing logic remains the same
+                        # Note: Direct console.print here will print above the Live component, which is allowed by Rich
+                        for node_name, output in data.items():
+                            if not output or "messages" not in output: continue
+                            last_node_msg = output["messages"][-1]
                             
-                            live.update(Text(""))
-                            live.refresh()
+                            if isinstance(last_node_msg, AIMessage):
+                                last_ai_message = last_node_msg
+                            
+                            if isinstance(last_node_msg, ToolMessage):
+                                args = "N/A"
+                                if last_ai_message and hasattr(last_ai_message, "tool_calls"):
+                                    for tool_call in last_ai_message.tool_calls:
+                                        if tool_call["id"] == last_node_msg.tool_call_id:
+                                            args = tool_call["args"]
+                                            break
+                                
+                                live.update(Text(""))
+                                live.refresh()
 
-                            console.print(Panel(
-                                f"[bold yellow]Tool:[/bold yellow] {last_node_msg.name}\n"
-                                f"[bold yellow]Args:[/bold yellow] {args}\n"
-                                f"[bold yellow]Result:[/bold yellow] [dim]{str(last_node_msg.content)[:300]}...[/dim]", 
-                                title="Action", 
-                                border_style="yellow"
-                            ))
+                                console.print(Panel(
+                                    f"[bold yellow]Tool:[/bold yellow] {last_node_msg.name}\n"
+                                    f"[bold yellow]Args:[/bold yellow] {args}\n"
+                                    f"[bold yellow]Result:[/bold yellow] [dim]{str(last_node_msg.content)[:300]}...[/dim]", 
+                                    title="Action", 
+                                    border_style="yellow"
+                                ))
+        except KeyboardInterrupt:
+            console.print("\n[bold yellow]Task Cancelled[/bold yellow]")
+            continue
 
 if __name__ == "__main__":
     # args: --model gpt-4o-mini or --model gemini-3-pro-preview
