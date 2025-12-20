@@ -1,6 +1,6 @@
 [project]
-name = "mastermind"
-version = "0.1.0"
+name = "mastermind-agent"
+version = "0.7.0"
 authors = [{ name = "Du Mingzhe", email = "mingzhe@nus.edu.sg" }]
 description = "Offensive CyberSecurity Agent"
 readme = "README.md"
@@ -14,6 +14,13 @@ dependencies = [
     "langchain-google-genai>=0.0.1",
     "tavily-python>=0.3.0",
 ]
+
+[tool.setuptools]
+packages = ["mastermind"]
+package-dir = {"" = "src"}
+
+[tool.setuptools.package-data]
+mastermind = ["prompts/*.md"]
 
 [project.scripts]
 mastermind = "mastermind:main"

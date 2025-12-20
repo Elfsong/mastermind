@@ -15,8 +15,8 @@ from rich.spinner import Spinner
 from rich.text import Text
 
 from dotenv import load_dotenv
-from utils import get_system_prompt
-from tools import web_search, shell_command
+from .utils import get_system_prompt
+from .tools import web_search, shell_command
 
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
@@ -47,8 +47,6 @@ CUSTOM_THEME = Theme({
     "tool": "bold green",
     "ai": "bold blue",
 })
-
-load_dotenv()
 
 def run_interactive_agent(agent, config):
     console = Console(theme=CUSTOM_THEME)
@@ -169,11 +167,59 @@ def run_interactive_agent(agent, config):
             console.print("\n[bold yellow]Task Cancelled[/bold yellow]")
             continue
 
+def load_environment_variables(model):
+    load_dotenv()
+    if model == "google":
+        if not os.getenv("GOOGLE_API_KEY"):
+            console = Console(theme=CUSTOM_THEME)
+            console.print("[bold yellow]GOOGLE_API_KEY is not set.[/bold yellow]")
+            api_key = console.input("Please enter your Google API key: ")
+            if api_key:
+                os.environ["GOOGLE_API_KEY"] = api_key.strip()
+            else:
+                console.print("[bold red]Google API Key is required for this model.[/bold red]")
+                exit(1)
+    
+    elif model == "openai":
+        if not os.getenv("OPENAI_API_KEY"):
+            console = Console(theme=CUSTOM_THEME)
+            console.print("[bold yellow]OPENAI_API_KEY is not set.[/bold yellow]")
+            api_key = console.input("Please enter your OpenAI API key: ")
+            if api_key:
+                os.environ["OPENAI_API_KEY"] = api_key.strip()
+            else:
+                console.print("[bold red]OpenAI API Key is required for this model.[/bold red]")
+                exit(1)
+                
+    elif model == "anthropic":
+        if not os.getenv("ANTHROPIC_API_KEY"):
+            console = Console(theme=CUSTOM_THEME)
+            console.print("[bold yellow]ANTHROPIC_API_KEY is not set.[/bold yellow]")
+            api_key = console.input("Please enter your Anthropic API key: ")
+            if api_key:
+                os.environ["ANTHROPIC_API_KEY"] = api_key.strip()
+            else:
+                console.print("[bold red]Anthropic API Key is required for this model.[/bold red]")
+                exit(1)
+                
+    # Tavily is optional or used by tools    
+    if not os.getenv("TAVILY_API_KEY"):
+            console = Console(theme=CUSTOM_THEME)
+            console.print("[bold yellow]TAVILY_API_KEY is not set.[/bold yellow]")
+            api_key = console.input("Please enter your Tavily API key: ")
+            if api_key:
+                os.environ["TAVILY_API_KEY"] = api_key.strip()
+            else:
+                console.print("[bold red]Tavily API Key is required for this model.[/bold red]")
+                exit(1)
+
 def main():
     # args: --model gpt-4o-mini or --model gemini-3-pro-preview
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, default="google", choices=["openai", "google", "anthropic"])
     args = parser.parse_args()
+
+    load_environment_variables(args.model)
 
     if args.model == "openai":
         backend = ChatOpenAI(model="gpt-4o-mini", streaming=True)
