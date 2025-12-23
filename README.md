@@ -2,6 +2,10 @@
 
 Mastermind is an offensive security assessment agent.
 
+## News
+- 2025-12-23: Working on the Agentic RL framework 🚧.
+- 2025-12-21: Mastermind Agent is released 🎉.
+
 ## Docker Setup
 
 ```bash
