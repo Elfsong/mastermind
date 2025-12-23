@@ -28,15 +28,5 @@ git clone https://github.com/Elfsong/mastermind.git
 
 # Create virtual environment named mastermind
 cd mastermind
-uv venv .mastermind
-source .mastermind/bin/activate
-
-# Set the environment variables
-echo "OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>" >> .env
-echo "TAVILY_API_KEY=<YOUR_TAVILY_API_KEY>" >> .env
-echo "LANGSMITH_TRACING=true" >> .env
-echo "LANGSMITH_ENDPOINT=https://api.smith.langchain.com" >> .env
-echo "LANGSMITH_API_KEY=<YOUR_LANGSMITH_API_KEY>" >> .env
-echo "LANGSMITH_PROJECT=<YOUR_LANGSMITH_PROJECT>" >> .env
-echo "TARGET_IP=<YOUR_TARGET_IP>" >> .env
-```
+uv venv --python 3.11
+source .venv/bin/activate
