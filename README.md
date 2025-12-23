@@ -30,3 +30,8 @@ git clone https://github.com/Elfsong/mastermind.git
 cd mastermind
 uv venv --python 3.11
 source .venv/bin/activate
+uv pip install -r requirements.txt
+
+# Run mastermind
+cd src
+python -m mastermind
