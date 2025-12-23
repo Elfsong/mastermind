@@ -1,0 +1,26 @@
+[project]
+name = "mastermind-agent"
+version = "0.7.0"
+authors = [{ name = "Du Mingzhe", email = "mingzhe@nus.edu.sg" }]
+description = "Offensive CyberSecurity Agent"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "rich>=13.0.0",
+    "python-dotenv>=1.0.0",
+    "langchain>=0.1.0",
+    "langchain-openai>=0.0.1",
+    "langchain-anthropic>=0.0.1",
+    "langchain-google-genai>=0.0.1",
+    "tavily-python>=0.3.0",
+]
+
+[tool.setuptools]
+packages = ["mastermind"]
+package-dir = {"" = "src"}
+
+[tool.setuptools.package-data]
+mastermind = ["prompts/*.md"]
+
+[project.scripts]
+mastermind = "mastermind:main"

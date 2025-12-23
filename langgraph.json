@@ -1,0 +1,7 @@
+{
+    "dependencies": ["."],
+    "graphs": {
+        "mastermind": "./src/mastermind.py:mastermind"
+    },
+    "env": ".env"
+}
