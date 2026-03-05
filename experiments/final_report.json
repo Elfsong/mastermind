@@ -1,0 +1,211 @@
+{
+  "timestamp": "2026-03-05 22:16:39",
+  "mode": "offline (mock LLM, simulated environment)",
+  "experiments": {
+    "exp1_homogeneity": {
+      "per_challenge": [
+        {
+          "challenge_id": "2013f-cry-stfu",
+          "n_runs": 16,
+          "n_solved": 6,
+          "avg_tool_jaccard": 0.653,
+          "avg_embedding_similarity": 0.716,
+          "mode_attack_vector": "bof",
+          "mode_frequency": 0.625,
+          "complement_ratio": 2.27
+        },
+        {
+          "challenge_id": "2015q-pwn-meme_shop",
+          "n_runs": 16,
+          "n_solved": 8,
+          "avg_tool_jaccard": 0.564,
+          "avg_embedding_similarity": 0.692,
+          "mode_attack_vector": "static_rev",
+          "mode_frequency": 0.75,
+          "complement_ratio": 1.75
+        },
+        {
+          "challenge_id": "2016f-rev-palo_alto",
+          "n_runs": 16,
+          "n_solved": 4,
+          "avg_tool_jaccard": 0.6,
+          "avg_embedding_similarity": 0.652,
+          "mode_attack_vector": "static_rev",
+          "mode_frequency": 0.5,
+          "complement_ratio": 1.93
+        },
+        {
+          "challenge_id": "2018f-cry-distastrous_security_apparatus",
+          "n_runs": 16,
+          "n_solved": 9,
+          "avg_tool_jaccard": 0.59,
+          "avg_embedding_similarity": 0.701,
+          "mode_attack_vector": "frequency_analysis",
+          "mode_frequency": 0.5,
+          "complement_ratio": 2.3
+        },
+        {
+          "challenge_id": "2019f-rev-mystery_boi",
+          "n_runs": 16,
+          "n_solved": 8,
+          "avg_tool_jaccard": 0.565,
+          "avg_embedding_similarity": 0.605,
+          "mode_attack_vector": "dynamic_rev",
+          "mode_frequency": 0.438,
+          "complement_ratio": 2.0
+        },
+        {
+          "challenge_id": "2020f-cry-jackpot",
+          "n_runs": 16,
+          "n_solved": 9,
+          "avg_tool_jaccard": 0.64,
+          "avg_embedding_similarity": 0.679,
+          "mode_attack_vector": "bof",
+          "mode_frequency": 0.562,
+          "complement_ratio": 2.34
+        },
+        {
+          "challenge_id": "2020f-web-sharkfacts",
+          "n_runs": 16,
+          "n_solved": 10,
+          "avg_tool_jaccard": 0.615,
+          "avg_embedding_similarity": 0.774,
+          "mode_attack_vector": "lfi",
+          "mode_frequency": 0.562,
+          "complement_ratio": 2.96
+        },
+        {
+          "challenge_id": "2023f-web-triathlon_or_sprint",
+          "n_runs": 16,
+          "n_solved": 9,
+          "avg_tool_jaccard": 0.718,
+          "avg_embedding_similarity": 0.736,
+          "mode_attack_vector": "sqli",
+          "mode_frequency": 0.562,
+          "complement_ratio": 2.53
+        },
+        {
+          "challenge_id": "2023q-web-cookie_injection",
+          "n_runs": 16,
+          "n_solved": 9,
+          "avg_tool_jaccard": 0.665,
+          "avg_embedding_similarity": 0.739,
+          "mode_attack_vector": "sqli",
+          "mode_frequency": 0.5,
+          "complement_ratio": 2.78
+        },
+        {
+          "challenge_id": "2023q-web-rainbow_notes",
+          "n_runs": 16,
+          "n_solved": 9,
+          "avg_tool_jaccard": 0.716,
+          "avg_embedding_similarity": 0.742,
+          "mode_attack_vector": "lfi",
+          "mode_frequency": 0.438,
+          "complement_ratio": 2.52
+        }
+      ],
+      "aggregate": {
+        "n_challenges": 10,
+        "avg_tool_jaccard": 0.633,
+        "avg_embedding_similarity": 0.704,
+        "avg_mode_frequency": 0.544,
+        "avg_complement_ratio": 2.34
+      },
+      "go_nogo": {
+        "decision": "BORDERLINE",
+        "reason": "Embedding sim=0.70, mode freq=0.54; examine per-category breakdown"
+      }
+    },
+    "exp2_continuation": {
+      "per_condition": {
+        "full_context": {
+          "success_rate": 0.5,
+          "solved": 15,
+          "total": 30,
+          "avg_steps_to_flag": 8.1,
+          "median_steps_to_flag": 8.0
+        },
+        "summary_only": {
+          "success_rate": 0.367,
+          "solved": 11,
+          "total": 30,
+          "avg_steps_to_flag": 7.8,
+          "median_steps_to_flag": 7.0
+        },
+        "fresh_start": {
+          "success_rate": 0.233,
+          "solved": 7,
+          "total": 30,
+          "avg_steps_to_flag": 8.0,
+          "median_steps_to_flag": 7.0
+        }
+      },
+      "go_nogo": {
+        "decision": "GO",
+        "reason": "Continuation improves over fresh start (A=50%, B=37% vs C=23%)"
+      }
+    },
+    "exp3_guidance": {
+      "per_challenge": [
+        {
+          "challenge_id": "2023q-web-cookie_injection",
+          "baseline_mode": "lfi",
+          "neg_divergence": 0.165,
+          "pos_divergence": 0.165,
+          "a_solved": "2/5",
+          "b_solved": "2/5",
+          "c_solved": "2/5"
+        },
+        {
+          "challenge_id": "2023q-web-rainbow_notes",
+          "baseline_mode": "lfi",
+          "neg_divergence": 0.251,
+          "pos_divergence": 0.251,
+          "a_solved": "2/5",
+          "b_solved": "2/5",
+          "c_solved": "2/5"
+        },
+        {
+          "challenge_id": "2016f-rev-palo_alto",
+          "baseline_mode": "static_rev",
+          "neg_divergence": 0.411,
+          "pos_divergence": 0.411,
+          "a_solved": "3/5",
+          "b_solved": "3/5",
+          "c_solved": "3/5"
+        },
+        {
+          "challenge_id": "2020f-web-sharkfacts",
+          "baseline_mode": "sqli",
+          "neg_divergence": 0.215,
+          "pos_divergence": 0.215,
+          "a_solved": "0/5",
+          "b_solved": "0/5",
+          "c_solved": "0/5"
+        },
+        {
+          "challenge_id": "2023f-web-triathlon_or_sprint",
+          "baseline_mode": "sqli",
+          "neg_divergence": 0.192,
+          "pos_divergence": 0.218,
+          "a_solved": "1/5",
+          "b_solved": "1/5",
+          "c_solved": "1/5"
+        }
+      ],
+      "go_nogo": {
+        "decision": "BORDERLINE",
+        "reason": "Avg divergence 0.25; mixed results"
+      }
+    }
+  },
+  "decision_matrix": {
+    "decision": "Reassess \u2014 mixed results (BORDERLINE/GO/BORDERLINE)",
+    "experiments": {
+      "exp1": "BORDERLINE",
+      "exp2": "GO",
+      "exp3": "BORDERLINE"
+    }
+  }
+}

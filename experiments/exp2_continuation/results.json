@@ -1,0 +1,29 @@
+{
+  "per_condition": {
+    "full_context": {
+      "success_rate": 0.5,
+      "solved": 15,
+      "total": 30,
+      "avg_steps_to_flag": 8.1,
+      "median_steps_to_flag": 8.0
+    },
+    "summary_only": {
+      "success_rate": 0.367,
+      "solved": 11,
+      "total": 30,
+      "avg_steps_to_flag": 7.8,
+      "median_steps_to_flag": 7.0
+    },
+    "fresh_start": {
+      "success_rate": 0.233,
+      "solved": 7,
+      "total": 30,
+      "avg_steps_to_flag": 8.0,
+      "median_steps_to_flag": 7.0
+    }
+  },
+  "go_nogo": {
+    "decision": "GO",
+    "reason": "Continuation improves over fresh start (A=50%, B=37% vs C=23%)"
+  }
+}

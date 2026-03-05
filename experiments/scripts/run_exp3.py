@@ -299,7 +299,8 @@ def analyze_and_report(trajectory_dir: str, exp1_dir: str, output_file: str):
         reason = f"Avg divergence {avg_divergence:.2f} < 0.2; agent ignores hints"
     else:
         go = "BORDERLINE"
-        reason = f"Avg divergence {avg_divergence:.2f if avg_divergence else 'N/A'}; mixed results"
+        div_str = f"{avg_divergence:.2f}" if avg_divergence else "N/A"
+        reason = f"Avg divergence {div_str}; mixed results"
 
     output = {
         "per_challenge": summary,
