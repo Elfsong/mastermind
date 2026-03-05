@@ -1,0 +1,18 @@
+{
+  "primary": {
+    "provider": "google",
+    "model": "gemini-2.5-pro-preview-05-06",
+    "temperature": 1.0,
+    "env_var": "GOOGLE_API_KEY"
+  },
+  "embedding": {
+    "provider": "google",
+    "model": "text-embedding-004",
+    "env_var": "GOOGLE_API_KEY"
+  },
+  "budget": {
+    "max_steps_per_run": 30,
+    "max_time_per_run_seconds": 900,
+    "estimated_tokens_per_step": 500
+  }
+}
