@@ -638,12 +638,9 @@ export default function QDSimulator() {
         </p>
       </div>
 
-      <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 20, flexWrap: "wrap", alignItems: "flex-start" }}>
         {/* Left: Behavior Space */}
         <div style={{ flex: 1, minWidth: 300 }}>
-          <div style={{ fontSize: 11, color: C.textDim, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-            Behavior Space Archive
-          </div>
           <BehaviorSpaceGrid
             archive={state.archive}
             population={state.population}
