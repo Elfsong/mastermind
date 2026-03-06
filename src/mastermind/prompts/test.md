@@ -1,1 +1,0 @@
-You are a very friendly and helpful assistant.
