@@ -141,16 +141,16 @@ function selectParentNoSharing(population) {
 // ─── Components ───
 
 function BehaviorSpaceGrid({ archive, population, highlight, sigma, showSharing, ridges, grid }) {
-  const svgW = 640, svgH = 640;
+  const vb = 640;
   const pad = 32;
-  const gW = svgW - pad * 2, gH = svgH - pad * 2;
+  const gW = vb - pad * 2, gH = vb - pad * 2;
   const cellW = gW / grid, cellH = gH / grid;
   const [hover, setHover] = useState(null);
 
   const archiveEntries = Object.entries(archive);
 
   return (
-    <svg width={svgW} height={svgH} style={{ display: "block" }} onMouseLeave={() => setHover(null)}>
+    <svg viewBox={`0 0 ${vb} ${vb}`} style={{ display: "block", width: "100%", height: "auto" }} onMouseLeave={() => setHover(null)}>
       <defs>
         <radialGradient id="flagGlow">
           <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.3" />
@@ -159,7 +159,7 @@ function BehaviorSpaceGrid({ archive, population, highlight, sigma, showSharing,
       </defs>
 
       {/* Background */}
-      <rect width={svgW} height={svgH} fill={C.bg} rx="8" />
+      <rect width={vb} height={vb} fill={C.bg} rx="8" />
 
       {/* Grid cells - fitness landscape heatmap + archive overlay */}
       {Array.from({ length: grid }, (_, cx) =>
@@ -209,7 +209,7 @@ function BehaviorSpaceGrid({ archive, population, highlight, sigma, showSharing,
       {hover && (() => {
         const tx = hover.x + cellW / 2;
         const ty = hover.y;
-        const flipX = tx > svgW - 120;
+        const flipX = tx > vb - 120;
         const flipY = ty < 60;
         const ax = flipX ? tx - 8 : tx + 8;
         const ay = flipY ? ty + cellH + 8 : ty - 8;
@@ -310,17 +310,17 @@ function BehaviorSpaceGrid({ archive, population, highlight, sigma, showSharing,
       })}
 
       {/* Axes */}
-      <text x={svgW / 2} y={svgH - 6} textAnchor="middle" fill={C.textDim} fontSize="10" fontFamily="monospace">
+      <text x={vb / 2} y={vb - 6} textAnchor="middle" fill={C.textDim} fontSize="10" fontFamily="monospace">
         Exploration Breadth →
       </text>
       <text
         x={10}
-        y={svgH / 2}
+        y={vb / 2}
         textAnchor="middle"
         fill={C.textDim}
         fontSize="10"
         fontFamily="monospace"
-        transform={`rotate(-90, 10, ${svgH / 2})`}
+        transform={`rotate(-90, 10, ${vb / 2})`}
       >
         Exploitation Depth →
       </text>
@@ -627,7 +627,7 @@ export default function QDSimulator() {
   });
 
   return (
-    <div style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "'JetBrains Mono', 'Fira Code', monospace", padding: 20 }}>
+    <div style={{ background: C.bg, minHeight: "100vh", color: C.text, fontFamily: "'JetBrains Mono', 'Fira Code', monospace", padding: 20, maxWidth: 1100, margin: "0 auto" }}>
       {/* Header */}
       <div style={{ marginBottom: 16, borderBottom: `1px solid ${C.border}`, paddingBottom: 12 }}>
         <h1 style={{ margin: 0, fontSize: 18, color: C.accent, fontWeight: 700, letterSpacing: "0.05em" }}>
@@ -640,7 +640,7 @@ export default function QDSimulator() {
 
       <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
         {/* Left: Behavior Space */}
-        <div>
+        <div style={{ flex: 1, minWidth: 300 }}>
           <div style={{ fontSize: 11, color: C.textDim, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.1em" }}>
             Behavior Space Archive
           </div>
@@ -656,18 +656,18 @@ export default function QDSimulator() {
         </div>
 
         {/* Right: Controls + Stats */}
-        <div style={{ flex: 1, minWidth: 280, display: "flex", flexDirection: "column", gap: 14 }}>
+        <div style={{ width: 300, flexShrink: 0, display: "flex", flexDirection: "column", gap: 14 }}>
           {/* Mode Toggle */}
           <div>
             <div style={{ fontSize: 11, color: C.textDim, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.1em" }}>
               Selection Mode
             </div>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button style={btnStyle(mode === "sharing")} onClick={() => setMode("sharing")}>
-                QD + Fitness Sharing
+            <div style={{ display: "flex", gap: 6 }}>
+              <button style={{ ...btnStyle(mode === "sharing"), flex: 1 }} onClick={() => setMode("sharing")}>
+                QD + Sharing
               </button>
-              <button style={btnStyle(mode === "none")} onClick={() => setMode("none")}>
-                Raw Fitness Only
+              <button style={{ ...btnStyle(mode === "none"), flex: 1 }} onClick={() => setMode("none")}>
+                Raw Fitness
               </button>
             </div>
           </div>
@@ -718,10 +718,10 @@ export default function QDSimulator() {
               Grid Size: {gridSize}×{gridSize}
             </div>
             <div style={{ display: "flex", gap: 6 }}>
-              {[20, 40, 60, 100].map((g) => (
+              {[20, 40, 60, 100, 200].map((g) => (
                 <button
                   key={g}
-                  style={btnStyle(gridSize === g)}
+                  style={{ ...btnStyle(gridSize === g), flex: 1 }}
                   onClick={() => {
                     setGridSize(g);
                     setRunning(false);
@@ -742,30 +742,30 @@ export default function QDSimulator() {
           </div>
 
           {/* Control buttons */}
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: 6 }}>
             <button
-              style={btnStyle(false)}
+              style={{ ...btnStyle(false), flex: 1 }}
               onClick={step}
             >
               Step
             </button>
             <button
-              style={btnStyle(running)}
+              style={{ ...btnStyle(running), flex: 1 }}
               onClick={() => setRunning(!running)}
             >
               {running ? "⏸ Pause" : "▶ Run"}
             </button>
             <button
-              style={{ ...btnStyle(false), borderColor: C.danger + "66", color: C.danger }}
-              onClick={reset}
-            >
-              Reset
-            </button>
-            <button
-              style={{ ...btnStyle(false), borderColor: C.warm + "66", color: C.warm }}
+              style={{ ...btnStyle(false), flex: 1, borderColor: C.warm + "66", color: C.warm }}
               onClick={clear}
             >
               Clear
+            </button>
+            <button
+              style={{ ...btnStyle(false), flex: 1, borderColor: C.danger + "66", color: C.danger }}
+              onClick={reset}
+            >
+              Reset
             </button>
           </div>
 
