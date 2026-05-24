@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "name": "mastermind-mm5-cybergym-local",
+  "benchmark": {
+    "root": "/mnt/bn/tiktok-mm-5/aiic/users/mz.du/cybergym_data",
+    "data_dir": "/mnt/bn/tiktok-mm-5/aiic/users/mz.du/cybergym_data/data",
+    "tasks_json": "/mnt/bn/tiktok-mm-5/aiic/users/mz.du/cybergym_data/tasks.json"
+  },
+  "server_data": {
+    "root": "/mnt/bn/tiktok-mm-5/aiic/users/mz.du/cybergym-server-data",
+    "arvo_dir": "/mnt/bn/tiktok-mm-5/aiic/users/mz.du/cybergym-server-data/arvo",
+    "oss_fuzz_dir": "/mnt/bn/tiktok-mm-5/aiic/users/mz.du/cybergym-server-data/oss-fuzz"
+  },
+  "task_splits": {
+    "full": "cybergym/TASKS_FULL",
+    "train": "cybergym/TASKS_TRAIN",
+    "eval": "cybergym/TASKS_EVAL"
+  },
+  "services": {
+    "cybergym_server": {
+      "url": "http://172.17.0.1:8666",
+      "api_key_env": "CYBERGYM_API_KEY"
+    },
+    "executor": {
+      "model": "openai/Qwen/Qwen3.5-27B",
+      "base_url": "http://localhost:8001/v1",
+      "api_key_env": "LLM_API_KEY",
+      "local_vllm_allows_empty_key": true
+    },
+    "planner": {
+      "model": "Qwen/Qwen3.5-27B",
+      "api_key_env": "TINKER_API_KEY"
+    }
+  },
+  "outputs": {
+    "run_root": "runs",
+    "rollout_store": "runs/rollouts.jsonl"
+  }
+}

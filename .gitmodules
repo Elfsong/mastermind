@@ -1,0 +1,7 @@
+[submodule "cybergym"]
+	path = cybergym
+	url = https://github.com/Elfsong/cybergym.git
+
+[submodule "NeurIPS-26-Mastermind"]
+	path = NeurIPS-26-Mastermind
+	url = git@github.com:Elfsong/NeurIPS-26-Mastermind.git
