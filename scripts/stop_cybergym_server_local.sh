@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="${MASTERMIND_REPO_ROOT:-/mlx_devbox/users/mz.du/repo/mastermind}"
+ROOT="${MASTERMIND_REPO_ROOT:-/data00/home/mz.du/Projects/mastermind}"
 PID_FILE="${ROOT}/runs/cybergym_server/server.pid"
 
 if [ ! -f "$PID_FILE" ]; then
@@ -10,9 +10,10 @@ if [ ! -f "$PID_FILE" ]; then
 fi
 
 PID="$(cat "$PID_FILE")"
-if kill -0 "$PID" 2>/dev/null; then
+if sudo kill -0 "$PID" 2>/dev/null; then
     sudo kill "$PID"
     echo "stopped CyberGym server: pid=$PID"
 else
     echo "CyberGym server is not running: pid=$PID"
+    rm -f "$PID_FILE"
 fi

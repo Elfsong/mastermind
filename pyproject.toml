@@ -5,6 +5,8 @@ description = "Strategy-level CyberGym experimentation for Mastermind."
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "cybergym[server]",
+    "hf-transfer>=0.1.9",
+    "huggingface-hub>=1.16.4",
     "orjson>=3.11.9",
 ]
 

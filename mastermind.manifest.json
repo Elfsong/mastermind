@@ -2,23 +2,25 @@
   "schema_version": 1,
   "name": "mastermind-mm5-cybergym-local",
   "benchmark": {
-    "root": "/mnt/bn/tiktok-mm-5/aiic/users/mz.du/cybergym_data",
-    "data_dir": "/mnt/bn/tiktok-mm-5/aiic/users/mz.du/cybergym_data/data",
-    "tasks_json": "/mnt/bn/tiktok-mm-5/aiic/users/mz.du/cybergym_data/tasks.json"
+    "root": "runs/cybergym_assets/cybergym_data",
+    "data_dir": "runs/cybergym_assets/cybergym_data/data",
+    "tasks_json": "runs/cybergym_assets/cybergym_data/tasks.json"
   },
   "server_data": {
-    "root": "/mnt/bn/tiktok-mm-5/aiic/users/mz.du/cybergym-server-data",
-    "arvo_dir": "/mnt/bn/tiktok-mm-5/aiic/users/mz.du/cybergym-server-data/arvo",
-    "oss_fuzz_dir": "/mnt/bn/tiktok-mm-5/aiic/users/mz.du/cybergym-server-data/oss-fuzz"
+    "root": "runs/cybergym_assets/cybergym-server-data",
+    "arvo_dir": "runs/cybergym_assets/cybergym-server-data/arvo",
+    "oss_fuzz_dir": "runs/cybergym_assets/cybergym-server-data/oss-fuzz"
   },
   "task_splits": {
     "full": "cybergym/TASKS_FULL",
     "train": "cybergym/TASKS_TRAIN",
+    "train_dev": "task_splits/cybergym/TASKS_TRAIN_DEV",
+    "validation": "task_splits/cybergym/TASKS_VALIDATION",
     "eval": "cybergym/TASKS_EVAL"
   },
   "services": {
     "cybergym_server": {
-      "url": "http://172.17.0.1:8666",
+      "url": "http://127.0.0.1:8666",
       "api_key_env": "CYBERGYM_API_KEY"
     },
     "executor": {
